@@ -24,7 +24,9 @@ Ops.QuebraCabecas = function(obj1,obj2){
 
 ## Sobrecarga da função genérica "print" do R
 print.QuebraCabecas <- function(obj) {
-  cat("Tabuleiro: ", t(matrix(obj$desc,nrow=3,ncol=3)), "\n")
+  mat <- obj$desc
+  mat[which(mat == -1)] <- "vazio"
+  cat("Tabuleiro: ", t(matrix(mat,nrow=3,ncol=3)), "\n")
   cat("G(n): ", obj$g, "\n")
   cat("H(n): ", obj$h, "\n")
   cat("F(n): ", obj$f, "\n")
@@ -38,11 +40,13 @@ heuristica.QuebraCabecas <- function(atual){
   ## h(obj) = soma((posX[i] - objX[i]) + (posY[i] - objY[i]))
   ## objetivo = [1 2 3
   ##             4 5 6
-  ##             7 8 -]
+  ##             7 8 -1]
   dist <- 0
   pos <- t(matrix(atual,nrow=3,ncol=3))
+  
   for(x in 1:3) {
     for(y in 1:3) {
+      
       ## Gerando posição objetivo
       if(pos[x,y] == 1) obj <- c(1,1)
       else if(pos[x,y] == 2) obj <- c(1,2)
@@ -52,14 +56,59 @@ heuristica.QuebraCabecas <- function(atual){
       else if(pos[x,y] == 6) obj <- c(2,3)
       else if(pos[x,y] == 7) obj <- c(3,1)
       else if(pos[x,y] == 8) obj <- c(3,2)
-      else if(pos[x,y] == "vazio") obj <- c(3,3)
+      else if(pos[x,y] == -1) obj <- c(3,3)
+      
       ## Cálculo da distância de Manhattan para a posição pos(x,y)
       dist <- dist + abs(x - obj[[1]]) + abs(y - obj[[2]])
     }
   }
+  
   return(dist)
 }
 
 ## Função de geração de estados filhos
-geraFilhos.QuebraCabecas <- function(atual){}
+geraFilhos.QuebraCabecas <- function(obj){
+  filhos <- list()
+  filhosDesc <- list()
+  desc <- obj$desc
+  matDesc <- t(matrix(desc, nrow=3, ncol=3))
+  
+  ## Vetor com as coordenadas x e y da posição vazia
+  posVazia <- which(matDesc == -1, arr.ind=TRUE)
+  ## Vetor de possíveis posições para cada nó filho
+  novosPares <- list()
+  ## gera pares de posição-valor com todos os operadores possíveis a partir da posição vazia
+  operadores <- list(c(posVazia[1] - 1, posVazia[2]),c(posVazia[1] + 1, posVazia[2]),
+                     c(posVazia[1], posVazia[2] - 1),c(posVazia[1], posVazia[2] + 1))
+  novosPares <- lapply(operadores, function(op) c(POS=op, VAL=matDesc[op]))
+  ## verifica posições incompatíveis com o problema  
+  incompativeis <- sapply(1:length(novosPares),
+                          function(i){
+                            nPar <- novosPares[[i]]
+                            ## Se a posição resultante é inválida, o conteúdo dela é nulo
+                            if(is.null(nPar["VAL"])) i ## é incompatível: retorna índice
+                            else 0 ## senão é compatível
+                          })
+  ## mantém no vetor apenas as que são incompatíveis
+  incompativeis <- incompativeis[incompativeis != 0]
+  ## remove posições incompatíveis
+  novosPares <- novosPares[-incompativeis]
+  # gera descrições dos estados filhos
+  filhosDesc <- lapply(novosPares, 
+                       function(nPar){
+                         fDesc <- matDesc
+                         fDesc[nPar["POS"]] <- -1
+                         fDesc[posVazia] <- nPar["VAL"]
+                         c(unlist(t(fDesc)))
+                       })
+  ## gera os objetos QuebraCabecas para os filhos
+  for(filhoDesc in filhosDesc){
+    filho <- QuebraCabecas(desc = filhoDesc, pai = obj)
+    filho$h <- heuristica(filho)
+    filho$g <- obj$g + 1
+    filhos <- c(filhos, list(filho))
+  }
+  
+  return(filhos)
+}
 
