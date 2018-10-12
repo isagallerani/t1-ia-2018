@@ -2,7 +2,7 @@ debugSource("QuebraCabecas.R")
 debugSource("buscaDesinformada.R")
 debugSource("buscaInformada.R")
 
-inicial <- QuebraCabecas(desc = c(1,3,4,5,2,7,6,-1,8))
+inicial <- QuebraCabecas(desc = c(1,2,3,4,5,7,6,-1,8))
 
 objetivo <- QuebraCabecas()
 objetivo$desc <- c(1,2,3,4,5,6,7,8,-1)
