@@ -2,10 +2,10 @@ debugSource("QuebraCabecas.R")
 debugSource("buscaDesinformada.R")
 debugSource("buscaInformada.R")
 
-inicial <- QuebraCabecas(desc = c(1,2,3,4,5,7,6,-1,8))
+inicial <- QuebraCabecas(desc = c(1,2,3,0,4,5,7,8,6))
 
 objetivo <- QuebraCabecas()
-objetivo$desc <- c(1,2,3,4,5,6,7,8,-1)
+objetivo$desc <- c(1,2,3,4,5,6,7,8,0)
 
 cat("====\tBusca em Largura\t====\n")
 print(unlist(buscaEmLargura(inicial, objetivo)))
