@@ -1,11 +1,9 @@
 debugSource("TrajetoCidades.R")
-debugSource("utils.R")
 debugSource("buscaDesinformada.R")
 debugSource("buscaInformada.R")
 
 inicial <- TrajetoCidades(desc = "O")
-objetivo <- TrajetoCidades(desc = "G")
-inicial$cidades <- geraDistancias(ini = inicial$desc, obj = obj$desc)
+objetivo <- TrajetoCidades(desc = "B")
 
 cat("====\tBusca em Largura\t====\n")
 print(unlist(buscaEmLargura(inicial, objetivo)))
