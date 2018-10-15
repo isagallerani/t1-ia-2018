@@ -31,7 +31,6 @@ print.TrajetoCidades <- function(obj){
 	cat("F(n): ", obj$f, "\n")
 }
 
-
 ## Sobrecarga da função genérica "heuristica", definida por Estado.R
 heuristica.TrajetoCidades <- function(atual){
   #Continuar...
